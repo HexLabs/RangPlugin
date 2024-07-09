@@ -2,6 +2,8 @@ package de.steallight.rangplugin.commands;
 
 import de.steallight.rangplugin.LuckPermsHandler;
 import de.steallight.rangplugin.RangPlugin;
+import de.steallight.rangplugin.messaging.MessageFormatter;
+import jdk.internal.net.http.common.ImmutableExtendedSSLSession;
 import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
@@ -16,21 +18,28 @@ import java.util.List;
 import java.util.Set;
 
 public class Rang implements CommandExecutor, TabCompleter {
+
+    MessageFormatter messageFormatter = RangPlugin.getPlugin().getMessageFormatter();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (sender instanceof Player) {
+            //check for the right command
             if (cmd.getName().equalsIgnoreCase("rang")) {
                 Player p = (Player) sender;
+
+
+                //check player permission to set Ranks or is Op
                 if (p.hasPermission("rang.set") || p.isOp()) {
                     if (args.length == 2) {
                         String groupname = args[1];
                         String playername = args[0];
+                        //check if player exist
                         if (Bukkit.getPlayer(playername) == null) {
-                            p.sendMessage(RangPlugin.prefix + "§cDieser Spieler existiert nicht!");
+                            p.sendMessage(messageFormatter.format(true, "error.player-not-exist"));
                         } else if (playername.equals(p.getName())) {
-                            p.sendMessage(RangPlugin.prefix + "§7Du kannst dich §c§lnicht §7selber in eine Gruppe setzen!");
+                            p.sendMessage(messageFormatter.format(true,"error.self-set"));
                         } else if (!LuckPermsHandler.isAvailable(groupname)) {
-                            p.sendMessage("§7Die Gruppe existiert §c§lnicht§7!");
+                            p.sendMessage(messageFormatter.format(true, "error.group-not-exist"));
                         } else {
                             Player pr = Bukkit.getPlayer(playername);
                             User player = LuckPermsHandler.getPlayer(pr);
@@ -38,14 +47,14 @@ public class Rang implements CommandExecutor, TabCompleter {
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                                     "lp user " + playername + " parent set " + groupname);
                             pr.kickPlayer("§7Neuer Rang: §c" + groupname);
-                            p.sendMessage(RangPlugin.prefix + "§aDer Spieler §c" + playername + "§a wurde erfolgreich zur Gruppe§c " + groupname + "§a hinzugefügt!");
+                            p.sendMessage(messageFormatter.prefix("§aDer Spieler §c" + playername + "§a wurde erfolgreich zur Gruppe §c" + groupname + "§a hinzugefügt!"));
 
                         }
                     } else {
-                        p.sendMessage(RangPlugin.prefix + "§cBenutze: §c§l/rang [Spieler] [Rang]");
+                        p.sendMessage(messageFormatter.format(true, "error.wrong-usage"));
                     }
                 } else {
-                    p.sendMessage(RangPlugin.prefix + "§cDazu hast du keine Rechte!");
+                    p.sendMessage(messageFormatter.format(true, "error.no-permission"));
                 }
             }
         } else if (cmd.getName().equalsIgnoreCase("rang")) {
@@ -55,9 +64,9 @@ public class Rang implements CommandExecutor, TabCompleter {
                 String groupname = args[1];
                 String playername = args[0];
                 if (Bukkit.getPlayer(playername) == null) {
-                    Bukkit.getConsoleSender().sendMessage(RangPlugin.prefix + "§cDieser Spieler existiert nicht!");
+                    Bukkit.getConsoleSender().sendMessage(messageFormatter.format(true, "error.player-not-exist"));
                 } else if (!LuckPermsHandler.isAvailable(groupname)) {
-                    Bukkit.getConsoleSender().sendMessage("§7Die Gruppe existiert §c§lnicht§7!");
+                    Bukkit.getConsoleSender().sendMessage(messageFormatter.format(true, "error.group-not-exist"));
                 } else {
                     Player pr = Bukkit.getPlayer(playername);
                     User player = LuckPermsHandler.getPlayer(pr);
@@ -66,11 +75,11 @@ public class Rang implements CommandExecutor, TabCompleter {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                             "lp user " + playername + " parent set " + groupname);
                     pr.kickPlayer("§7Neuer Rang: §c" + groupname);
-                    Bukkit.getConsoleSender().sendMessage(RangPlugin.prefix + "§aDer Spieler §c" + playername + "§a wurde erfolgreich zur Gruppe§c " + groupname + "§a hinzugefügt!");
+                    Bukkit.getConsoleSender().sendMessage(messageFormatter.prefix("§aDer Spieler §c" + playername + "§a wurde erfolgreich zur Gruppe§c " + groupname + "§a hinzugefügt!"));
 
                 }
             } else {
-                Bukkit.getConsoleSender().sendMessage(RangPlugin.prefix + "§cBenutze: §c§l/rang [Spieler] [Rang]");
+                Bukkit.getConsoleSender().sendMessage(messageFormatter.format(true, "error.wrong-usage"));
             }
 
         }

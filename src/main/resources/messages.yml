@@ -1,0 +1,11 @@
+prefix: '§8[§c§bRang§8] '
+enable:
+  plugin-enabled: '§7Plugin erfolgreich §aaktiviert!'
+disable:
+  plugin-disabled: '§7Plugin erfolgreich §cdeaktiviert!'
+error:
+  player-not-exist: '§cDieser Spieler existiert nicht!'
+  self-set: '§7Du kannst dich §c§lnicht §7selber in eine Gruppe setzen!'
+  group-not-exist: '§7Die Gruppe existiert §c§lnicht§7!'
+  wrong-usage: '§cBenutze: §c§l/rang [Spieler] [Rang]'
+  no-permission: '§cDazu hast du keine Rechte!'
